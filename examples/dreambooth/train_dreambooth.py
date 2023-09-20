@@ -846,7 +846,14 @@ def main(args):
                 torch_dtype = torch.float16
             elif args.prior_generation_precision == "bf16":
                 torch_dtype = torch.bfloat16
-            pipeline = DiffusionPipeline.from_pretrained(
+
+            get_pipeline = (
+                StableDiffusionPipeline.from_single_file
+                if args.pretrained_model_name_or_path.endswith(".safetensors", ".ckpt")
+                else DiffusionPipeline.from_pretrained
+            )
+
+            pipeline = get_pipeline(
                 args.pretrained_model_name_or_path,
                 torch_dtype=torch_dtype,
                 safety_checker=None,
